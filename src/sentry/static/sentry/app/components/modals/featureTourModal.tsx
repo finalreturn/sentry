@@ -10,11 +10,15 @@ import {IconClose} from 'app/icons';
 import {callIfFunction} from 'app/utils/callIfFunction';
 import space from 'app/styles/space';
 
-type TourStep = {
+export type TourStep = {
   title: string;
-  body: React.ReactNode;
-  actions?: React.ReactElement;
-  image?: React.ReactElement;
+  body: any;
+  actions?: React.ReactNode | undefined | null;
+  image?: React.ReactNode | undefined | null;
+};
+
+const defaultProps = {
+  doneText: t('Done'),
 };
 
 type ContentsProps = ModalRenderProps & {
@@ -31,6 +35,11 @@ type ContentsProps = ModalRenderProps & {
    * Triggered when the tour is closed by completion or x
    */
   onCloseModal?: (currentIndex: number, durationOpen: number) => void;
+
+  /**
+   * Customize the text shown on the done button.
+   */
+  doneText: string;
 };
 
 type ContentsState = {
@@ -47,6 +56,8 @@ type ContentsState = {
 };
 
 class ModalContents extends React.Component<ContentsProps, ContentsState> {
+  static defaultProps = defaultProps;
+
   state: ContentsState = {
     openedAt: Date.now(),
     current: 0,
@@ -74,7 +85,7 @@ class ModalContents extends React.Component<ContentsProps, ContentsState> {
   };
 
   render() {
-    const {Body, steps} = this.props;
+    const {Body, steps, doneText} = this.props;
     const {current} = this.state;
     const step = steps[current] !== undefined ? steps[current] : steps[steps.length - 1];
     const hasNext = steps[current + 1] !== undefined;
@@ -106,7 +117,7 @@ class ModalContents extends React.Component<ContentsProps, ContentsState> {
             )}
             {!hasNext && (
               <Button data-test-id="complete-tour" onClick={this.handleClose}>
-                {t('All Done')}
+                {doneText}
               </Button>
             )}
           </ButtonBar>
@@ -153,4 +164,18 @@ const StepCounter = styled(TourContent)`
   font-size: ${p => p.theme.fontSizeSmall};
   color: ${p => p.theme.gray400};
   margin-bottom: 0;
+`;
+
+export const TourText = styled('p')`
+  text-align: center;
+  margin: 0 ${space(3)};
+`;
+
+export const TourImage = styled('img')`
+  margin-top: ${space(4)};
+
+  /** override styles in less files */
+  box-shadow: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
 `;
