@@ -133,7 +133,7 @@ type ChildProps = {
 };
 
 type Props = {
-  children: (childProps: ChildProps) => React.ReactNode;
+  children: (props: ChildProps) => React.ReactNode;
 } & Pick<ContentsProps, 'steps' | 'onCloseModal' | 'onAdvance'>;
 
 function FeatureTourModal(props: Props) {
@@ -141,7 +141,8 @@ function FeatureTourModal(props: Props) {
     const modalProps = omit(props, ['children']);
     openModal(deps => <ModalContents {...deps} {...modalProps} />);
   };
-  return props.children({handleShow});
+
+  return <React.Fragment>{props.children({handleShow})}</React.Fragment>;
 }
 
 export default FeatureTourModal;
